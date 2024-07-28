@@ -11,6 +11,8 @@ class CameraController extends Controller
     {
         $request->validate([
             'image' => 'required',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
         ]);
 
         $imageData = $request->input('image');
@@ -18,8 +20,15 @@ class CameraController extends Controller
         $imageData = str_replace(' ', '+', $imageData);
         $imageName = time().'.png';
 
-        \File::put(public_path('images'). '/' . $imageName, base64_decode($imageData));
+        \File::put(public_path('images') . '/' . $imageName, base64_decode($imageData));
 
-        return response()->json(['success' => 'Gambar berhasil diunggah!']);
+        // Simpan data lokasi (latitude dan longitude)
+        $latitude = $request->input('latitude');
+        $longitude = $request->input('longitude');
+
+        // Anda dapat menyimpan lokasi ini ke database jika diperlukan
+        // Contoh: Location::create(['latitude' => $latitude, 'longitude' => $longitude]);
+
+        return response()->json(['success' => 'Gambar berhasil diunggah!', 'image' => $imageName, 'latitude' => $latitude, 'longitude' => $longitude]);
     }
 }

@@ -11,8 +11,11 @@
     <form id="uploadForm" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="image" id="image">
+        <input type="hidden" name="latitude" id="latitude">
+        <input type="hidden" name="longitude" id="longitude">
         <button type="submit">Unggah Gambar</button>
     </form>
+    <p id="location"></p> <!-- Tambahkan elemen ini untuk menampilkan lokasi -->
 
     <script>
         // Akses kamera
@@ -20,6 +23,9 @@
         const canvas = document.getElementById('canvas');
         const snap = document.getElementById('snap');
         const image = document.getElementById('image');
+        const latitude = document.getElementById('latitude');
+        const longitude = document.getElementById('longitude');
+        const locationText = document.getElementById('location');
         const context = canvas.getContext('2d');
 
         // Dapatkan akses ke kamera
@@ -37,6 +43,20 @@
             const dataUrl = canvas.toDataURL('image/png');
             image.value = dataUrl;
             canvas.style.display = 'block';
+
+            // Dapatkan lokasi pengguna
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    latitude.value = position.coords.latitude;
+                    longitude.value = position.coords.longitude;
+                    locationText.innerText = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
+                }, error => {
+                    console.error('Error getting location: ' + error.message);
+                    locationText.innerText = 'Error getting location: ' + error.message;
+                });
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
         });
 
         // Tangani pengunggahan formulir
